@@ -1,0 +1,47 @@
+name: Splat Runner
+
+on:
+  workflow_dispatch:  # For manual execution
+  schedule:
+    - cron: "0 6 * * *"  # Every day at 6:00
+
+jobs:
+  splat:  # This Job fetches and prepares data for splat-core
+    runs-on: ubuntu-latest
+    container:
+      image: girade/splat:1
+      options: --user splatuser
+    env:
+      HOME: /splat  # Ensures Python resolves user-specific paths correctly within the container
+      SPLAT_GITHUB_USER_ACCESS_TOKEN: ${{ secrets.SPLAT_GITHUB_USER_ACCESS_TOKEN }}
+      SPLAT_TEAMS_WEBHOOK_URL: ${{ secrets.SPLAT_TEAMS_WEBHOOK_URL }}
+    outputs:
+      platform_projects: ${{ steps.runsplat.outputs.platform_projects }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Splat
+        id: runsplat
+        run: |
+          splat
+          json=$(cat /splat/platform_projects.json | jq -c '.')
+          echo "platform_projects=$json" >> $GITHUB_OUTPUT
+
+  splat-core:  # This Job processes the projects data (platform_projects) output by the Splat job
+    needs: splat
+    runs-on: ubuntu-latest
+    name: Process ${{ matrix.platform_projects.project_name }}
+    container:
+      image: girade/splat:1
+      options: --user splatuser
+    env:
+      HOME: /splat  # Ensures Python resolves user-specific paths correctly within the container
+      SPLAT_GITHUB_USER_ACCESS_TOKEN: ${{ secrets.SPLAT_GITHUB_USER_ACCESS_TOKEN }}
+      SPLAT_TEAMS_WEBHOOK_URL: ${{ secrets.SPLAT_TEAMS_WEBHOOK_URL }}
+    strategy:
+      matrix:
+        platform_projects: ${{ fromJson(needs.splat.outputs.platform_projects) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Splat
+        run: |
+          splat --platform-id ${{ matrix.platform_projects.platform_id }} --project-id ${{ matrix.platform_projects.project_id }}

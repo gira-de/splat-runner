@@ -1,0 +1,30 @@
+general:
+  logging:
+    level: "DEBUG" # Available: ERROR, INFO, DEBUG
+  git:
+    clone_dir: /splat/splat_repos/
+    branch_name: splat
+  debug:
+    skip_cleanup: False
+
+source_control:
+  platforms:
+    - type: github
+      id: github-com-1
+      name: github.com
+      domain: "https://github.com"
+      access_token: ${SPLAT_GITHUB_USER_ACCESS_TOKEN}
+      filters:
+        include:
+          # All repo of gira-de org
+          - "gira-de/.*"
+        exclude:
+          # self
+          - "gira-de/splat-runner"
+          # system tests
+          - "gira-de/splat-system-test"
+
+notifications:
+  sinks:
+    - type: teams
+      webhook_url: ${SPLAT_TEAMS_WEBHOOK_URL}
