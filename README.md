@@ -10,16 +10,16 @@ Splat is a tool designed to automate the auditing and potentially automatically 
 
 This repo requires the following environment variables to function properly:
 
-| Variable                          | Description                                                                                                                                    |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `SPLAT_GITHUB_USER_ACCESS_TOKEN`  | This token is needed by Splat to access all the projects that are accessible to user that this access token belongs to.                        |
-| `SPLAT_TEAMS_WEBHOOK_URL` | This URL is used for sending notifications to Microsoft Teams.                                                                                 |
+| Variable                         | Description                                                                                                             |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `SPLAT_GITHUB_USER_ACCESS_TOKEN` | This token is needed by Splat to access all the projects that are accessible to user that this access token belongs to. |
+| `SPLAT_TEAMS_WEBHOOK_URL`        | This URL is used for sending notifications to Microsoft Teams.                                                          |
 
 ## Local Execution
 
 To test this deployment of Splat locally, follow these steps:
 
-1. Install [act](https://github.com/nektos/act) (runs GitHub Actions locally via Docker)
+1. Install [act](https://github.com/nektos/act) (runs GitHub Actions locally via Docker). You can do so by executing the curl command listed in the [act User guide](https://nektosact.com/installation/index.html#pre-built-artifacts).
 
 2. Create a file ".secrets" (which is git-ignored) where you put valid values for your test configuration:
 
@@ -32,7 +32,10 @@ SPLAT_GITHUB_USER_ACCESS_TOKEN=<some-access-token>
 
 **Important!** Note that splat will run on _all_ projects that the access token has access to. If you want it to run on specific projects only, modify the `splat.yaml` and temporarily add a filter.
 
+Creating the access token can be done under `Settings` > `Developer-Settings` > `Personal access tokens` after clicking the profile picture on the top right.
+
 3. Run Splat locally
+
 ```bash
 act workflow_dispatch
 ```
