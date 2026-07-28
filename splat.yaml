@@ -23,6 +23,7 @@ source_control:
           - "gira-de/splat-runner"
           # system tests
           - "gira-de/splat-system-test"
+          - "gira-de/splat-manual-test"
 
 notifications:
   sinks:
